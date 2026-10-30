@@ -24,15 +24,15 @@
 
     <main class="max-w-md mx-auto p-4 space-y-5">
 
-        <!-- Balance Display Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-xl">
-            <p class="text-xs text-slate-400 mb-1">বর্তমান ড্যাশবোর্ড ব্যালেন্স / পাওনা</p>
+        <!-- Balance Display Card (Dynamic Green / Red Border) -->
+        <div id="balanceCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-xl transition-all duration-300">
+            <p class="text-xs text-slate-400 mb-1">বর্তমান ড্যাশবোর্ড স্ট্যাটাস</p>
             <h2 id="displayBalance" class="text-4xl font-extrabold text-emerald-400">৳ ০</h2>
             <p id="balanceStatusText" class="text-xs text-slate-400 mt-2">হিসাব লোড হচ্ছে...</p>
         </div>
 
         <!-- Admin Control Panel (Hidden by default) -->
-        <div id="adminPanel" class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl hidden space-y-4">
+        <div id="adminPanel" class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl hidden space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="font-semibold text-emerald-400 text-sm">💰 হিসাব পরিচালনা প্যানেল</h3>
                 <button onclick="logoutAdmin()" class="text-xs text-red-400 hover:underline">লগআউট</button>
@@ -80,13 +80,13 @@
             <!-- SECTION 2: WITHDRAW OR ADVANCE -->
             <div id="sectionAction" class="space-y-4 hidden">
                 <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300">
-                    <p id="actionInstructionText">ব্যালেন্স থাকলে 'উত্তোলন করুন', না থাকলে 'অগ্রিম নিন'।</p>
+                    <p id="actionInstructionText">ব্যালেন্স জমা থাকলে 'উত্তোলন করুন', পাওনা থাকলে 'অগ্রিম নিন'।</p>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">এমাউন্ট দিন:</label>
                     <input type="number" id="actionInputAmount" placeholder="যেমন: ১০০০" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-emerald-500">
                 </div>
-                <button id="dynamicActionBtn" onclick="submitAction()" class="w-full bg-amber-600 hover:bg-amber-500 font-medium py-3 rounded-xl transition shadow-md text-sm">
+                <button id="dynamicActionBtn" onclick="submitAction()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white">
                     উত্তোলন করুন
                 </button>
             </div>
@@ -141,25 +141,36 @@
         }
 
         function updateBalanceDisplay() {
+            const balanceCard = document.getElementById('balanceCard');
             const balanceElem = document.getElementById('displayBalance');
             const statusElem = document.getElementById('balanceStatusText');
             const dynamicBtn = document.getElementById('dynamicActionBtn');
             const instructionText = document.getElementById('actionInstructionText');
 
-            balanceElem.innerText = `৳ ${currentBalance.toLocaleString('bn-BD')}`;
+            const absBalance = Math.abs(currentBalance);
 
             if (currentBalance >= 0) {
+                // জমা (Green Theme)
+                balanceCard.className = "bg-slate-900 border border-emerald-500/40 rounded-2xl p-6 text-center shadow-xl transition-all duration-300";
+                balanceElem.className = "text-4xl font-extrabold text-emerald-400";
+                balanceElem.innerText = `৳ ${currentBalance.toLocaleString('bn-BD')}`;
                 statusElem.innerText = "টাকা জমা রয়েছে";
                 statusElem.className = "text-xs text-emerald-400 mt-2 font-medium";
+
                 dynamicBtn.innerText = "উত্তোলন করুন";
-                dynamicBtn.className = "w-full bg-amber-600 hover:bg-amber-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white";
+                dynamicBtn.className = "w-full bg-emerald-600 hover:bg-emerald-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white";
                 instructionText.innerText = "আপনার ব্যালেন্স জমা আছে। উত্তোলন করতে চাইলে নিচের বক্সে এমাউন্ট দিন।";
             } else {
-                statusElem.innerText = `পাওনা / মাইনাস ব্যালেন্স রয়েছে`;
+                // পাওনা (Red Theme)
+                balanceCard.className = "bg-slate-900 border border-rose-500/40 rounded-2xl p-6 text-center shadow-xl transition-all duration-300";
+                balanceElem.className = "text-4xl font-extrabold text-rose-400";
+                balanceElem.innerText = `৳ ${absBalance.toLocaleString('bn-BD')}`;
+                statusElem.innerText = "পাওনা রয়েছে";
                 statusElem.className = "text-xs text-rose-400 mt-2 font-medium";
+
                 dynamicBtn.innerText = "অগ্রিম নিন";
                 dynamicBtn.className = "w-full bg-rose-600 hover:bg-rose-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white";
-                instructionText.innerText = "আপনার ব্যালেন্স মাইনাসে আছে। আরও অগ্রিম নিতে চাইলে নিচের বক্সে এমাউন্ট দিন।";
+                instructionText.innerText = "আপনার ব্যালেন্স পাওনা রয়েছে। আরও অগ্রিম নিতে চাইলে নিচের বক্সে এমাউন্ট দিন।";
             }
         }
 
@@ -176,7 +187,7 @@
                 secCalc.classList.remove('hidden');
                 secAction.classList.add('hidden');
             } else {
-                tabAction.className = "py-2 text-xs font-medium rounded-lg bg-amber-600 text-white transition";
+                tabAction.className = "py-2 text-xs font-medium rounded-lg bg-rose-600 text-white transition";
                 tabCalc.className = "py-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition";
                 secAction.classList.remove('hidden');
                 secCalc.classList.add('hidden');
