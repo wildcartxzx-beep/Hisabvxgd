@@ -105,8 +105,8 @@
     <!-- Admin Pin Modal -->
     <div id="pinModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-xs space-y-4 shadow-2xl">
-            <h3 class="font-bold text-center text-slate-200 text-sm">অ্যাডমিন পিন দিন</h3>
-            <input type="password" id="pinInput" placeholder="পিন (যেমন: 1234)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-center tracking-widest text-lg focus:outline-none focus:border-emerald-500">
+            <h3 class="font-bold text-center text-slate-200 text-sm">অ্যাডমিন</h3>
+            <input type="password" id="pinInput" placeholder=" " class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-center tracking-widest text-lg focus:outline-none focus:border-emerald-500">
             <div class="flex gap-2">
                 <button onclick="closePinModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs">বাতিল</button>
                 <button onclick="verifyPin()" class="w-1/2 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl text-xs font-medium">প্রবেশ</button>
@@ -351,7 +351,7 @@
 
         function verifyPin() {
             const enteredPin = document.getElementById('pinInput').value;
-            if (enteredPin === "1234") {
+            if (enteredPin === "2240") {
                 isAdmin = true;
                 localStorage.setItem('isAdminLoggedIn', 'true');
                 closePinModal();
