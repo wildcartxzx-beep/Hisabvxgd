@@ -3,110 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>হিসাব রক্ষণ ও লেজার</title>
+    <title>হিসাব-নিকাশ খাতা</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen pb-10">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-12">
 
     <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md sticky top-0 z-50">
-        <div class="max-w-2xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-emerald-400">হিসাব-নিকাশ খাতা</h1>
-            <div>
-                <button id="adminToggleBtn" onclick="toggleAdminModal()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg border border-slate-600 transition">
-                    🔒 অ্যাডমিন লগইন
-                </button>
-            </div>
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <h1 class="text-lg font-bold text-emerald-400">হিসাব-নিকাশ</h1>
+            <button id="adminToggleBtn" onclick="toggleAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                🔒 অ্যাডমিন লগইন
+            </button>
         </div>
     </header>
 
-    <main class="max-w-2xl mx-auto p-4 space-y-6">
+    <main class="max-w-md mx-auto p-4 space-y-5">
 
         <!-- Balance Display Card -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center shadow-lg">
-            <p class="text-sm text-slate-400 mb-1">বর্তমান আর্থিক অবস্থা</p>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center shadow-xl">
+            <p class="text-xs text-slate-400 mb-1">বর্তমান ড্যাশবোর্ড ব্যালেন্স / পাওনা</p>
             <h2 id="displayBalance" class="text-4xl font-extrabold text-emerald-400">৳ ০</h2>
             <p id="balanceStatusText" class="text-xs text-slate-400 mt-2">হিসাব লোড হচ্ছে...</p>
         </div>
 
         <!-- Admin Control Panel (Hidden by default) -->
-        <div id="adminPanel" class="bg-slate-800 border border-emerald-500/30 rounded-2xl p-5 shadow-lg hidden space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-semibold text-emerald-400">⚙️ নতুন হিসাব এন্ট্রি করুন</h3>
+        <div id="adminPanel" class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-xl hidden space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-semibold text-emerald-400 text-sm">💰 হিসাব পরিচালনা প্যানেল</h3>
                 <button onclick="logoutAdmin()" class="text-xs text-red-400 hover:underline">লগআউট</button>
             </div>
 
-            <!-- Simple Input Box -->
-            <div>
-                <label class="block text-xs text-slate-400 mb-1">টাকার পরিমাণ বা এমাউন্ট লিখুন:</label>
-                <div class="flex gap-2">
-                    <input type="number" id="inputAmount" placeholder="যেমন: ৫০০" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-lg focus:outline-none focus:border-emerald-500">
-                    <button onclick="addToList()" class="bg-slate-700 hover:bg-slate-600 px-5 rounded-xl font-medium transition">যোগ</button>
-                </div>
+            <!-- TAB SELECTOR -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <button id="tabCalc" onclick="switchTab('calc')" class="py-2 text-xs font-medium rounded-lg bg-emerald-600 text-white transition">টাকা যোগ / জমা</button>
+                <button id="tabAction" onclick="switchTab('action')" class="py-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition">উত্তোলন / অগ্রিম</button>
             </div>
 
-            <!-- Added Amounts List (Badges) -->
-            <div id="badgeContainer" class="flex flex-wrap gap-2 min-h-[40px] bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                <span class="text-xs text-slate-500">যোগ করা এমাউন্টগুলো এখানে দেখাবে...</span>
-            </div>
-
-            <!-- Percentage Option -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- SECTION 1: ADD & DEPOSIT CALCULATOR -->
+            <div id="sectionCalc" class="space-y-4">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">পার্সেন্টেজ (%) বাদ দিন:</label>
-                    <input type="number" id="inputPercentage" value="0" placeholder="0" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs text-slate-400 mb-1">টাকার পরিমাণ লিখুন:</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="inputAmount" placeholder="যেমন: ৫০০" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-emerald-500">
+                        <button onclick="addToList()" class="bg-slate-800 hover:bg-slate-700 px-5 rounded-xl font-medium transition text-sm">যোগ</button>
+                    </div>
                 </div>
+
+                <!-- Added Numbers Badges -->
+                <div id="badgeContainer" class="flex flex-wrap gap-2 min-h-[38px] bg-slate-950/50 p-2.5 rounded-xl border border-slate-800/80">
+                    <span class="text-xs text-slate-600">যোগ করা এমাউন্টগুলো এখানে দেখাবে...</span>
+                </div>
+
+                <!-- Percentage Input -->
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">ছোট নোট (ঐচ্ছিক):</label>
-                    যেমন: বাজার খরচ...
-                    <input type="text" id="inputDesc" placeholder="বিবরণ" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    <label class="block text-xs text-slate-400 mb-1">পার্সেন্টেজ (%) বাদ দিন (যদি থাকে):</label>
+                    <input type="number" id="inputPercentage" value="0" placeholder="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-            </div>
 
-            <!-- Final Net Preview -->
-            <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center text-sm">
-                <span class="text-slate-400">হিসাব শেষে নিট এমাউন্ট:</span>
-                <span id="previewNet" class="font-bold text-emerald-400 text-lg">৳ ০</span>
-            </div>
+                <!-- Preview Box -->
+                <div class="bg-slate-950 p-3 rounded-xl flex justify-between items-center text-sm border border-slate-800">
+                    <span class="text-slate-400 text-xs">চূড়ান্ত জমা এমাউন্ট:</span>
+                    <span id="previewNet" class="font-bold text-emerald-400 text-base">৳ ০</span>
+                </div>
 
-            <!-- Simple & Clean Action Buttons -->
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="submitTransaction('deposit')" class="bg-emerald-600 hover:bg-emerald-500 font-medium py-3 rounded-xl transition shadow-md">
+                <!-- Submit Deposit Button -->
+                <button onclick="submitDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-500 font-medium py-3 rounded-xl transition shadow-md text-sm">
                     জমা করুন
                 </button>
-                <button id="dynamicActionBtn" onclick="submitTransaction('withdraw')" class="bg-rose-600 hover:bg-rose-500 font-medium py-3 rounded-xl transition shadow-md">
+            </div>
+
+            <!-- SECTION 2: WITHDRAW OR ADVANCE -->
+            <div id="sectionAction" class="space-y-4 hidden">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-300">
+                    <p id="actionInstructionText">ব্যালেন্স থাকলে 'উত্তোলন করুন', না থাকলে 'অগ্রিম নিন'।</p>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">এমাউন্ট দিন:</label>
+                    <input type="number" id="actionInputAmount" placeholder="যেমন: ১০০০" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-base focus:outline-none focus:border-emerald-500">
+                </div>
+                <button id="dynamicActionBtn" onclick="submitAction()" class="w-full bg-amber-600 hover:bg-amber-500 font-medium py-3 rounded-xl transition shadow-md text-sm">
                     উত্তোলন করুন
                 </button>
             </div>
         </div>
 
         <!-- History Ledger Section -->
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-4">
-            <h3 class="font-semibold text-slate-300 border-b border-slate-700 pb-2">📜 পূর্বের লেনদেনসমূহ</h3>
-            <div id="transactionList" class="space-y-3 max-h-[450px] overflow-y-auto pr-1">
-                <p class="text-center text-slate-500 text-sm py-4">তথ্য লোড হচ্ছে...</p>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-3">
+            <h3 class="font-semibold text-slate-300 text-sm border-b border-slate-800 pb-2">📜 হিস্ট্রি বা লেনদেনসমূহ</h3>
+            <div id="transactionList" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                <p class="text-center text-slate-600 text-xs py-4">তথ্য লোড হচ্ছে...</p>
             </div>
         </div>
 
     </main>
 
     <!-- Admin Pin Modal -->
-    <div id="pinModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-xs space-y-4 shadow-2xl">
-            <h3 class="font-bold text-center text-slate-200">অ্যাডমিন পিন দিন</h3>
-            <input type="password" id="pinInput" placeholder="পিন কোড (যেমন: 1234)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-center tracking-widest text-lg focus:outline-none focus:border-emerald-500">
+    <div id="pinModal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-xs space-y-4 shadow-2xl">
+            <h3 class="font-bold text-center text-slate-200 text-sm">অ্যাডমিন পিন দিন</h3>
+            <input type="password" id="pinInput" placeholder="পিন (যেমন: 1234)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-center tracking-widest text-lg focus:outline-none focus:border-emerald-500">
             <div class="flex gap-2">
-                <button onclick="closePinModal()" class="w-1/2 bg-slate-700 hover:bg-slate-600 py-2.5 rounded-xl text-sm">বাতিল</button>
-                <button onclick="verifyPin()" class="w-1/2 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl text-sm font-medium">প্রবেশ</button>
+                <button onclick="closePinModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 py-2.5 rounded-xl text-xs">বাতিল</button>
+                <button onclick="verifyPin()" class="w-1/2 bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl text-xs font-medium">প্রবেশ</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
+    <!-- JavaScript Script -->
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb7AQNSExxNHOO8dd4OyIqmqycGwKQp4GtKiI-GypH0X3RPupj-C1hGQFPHYLiAqYy/exec";
         
@@ -119,7 +127,6 @@
             updateAdminUI();
         };
 
-        // Fetch Data from Google Sheets
         function fetchData() {
             fetch(SCRIPT_URL)
                 .then(res => res.json())
@@ -133,33 +140,50 @@
                 });
         }
 
-        // Update Balance UI & Dynamic Button Text Logic
         function updateBalanceDisplay() {
             const balanceElem = document.getElementById('displayBalance');
             const statusElem = document.getElementById('balanceStatusText');
             const dynamicBtn = document.getElementById('dynamicActionBtn');
+            const instructionText = document.getElementById('actionInstructionText');
 
             balanceElem.innerText = `৳ ${currentBalance.toLocaleString('bn-BD')}`;
 
-            if (currentBalance > 0) {
-                statusElem.innerText = "উদ্বৃত্ত / জমা ব্যালেন্স রয়েছে";
+            if (currentBalance >= 0) {
+                statusElem.innerText = "টাকা জমা রয়েছে";
                 statusElem.className = "text-xs text-emerald-400 mt-2 font-medium";
                 dynamicBtn.innerText = "উত্তোলন করুন";
-                dynamicBtn.className = "bg-amber-600 hover:bg-amber-500 font-medium py-3 rounded-xl transition shadow-md";
-            } else if (currentBalance < 0) {
-                statusElem.innerText = `পাওনা রয়েছে (মাইনাস: ৳ ${Math.abs(currentBalance).toLocaleString('bn-BD')})`;
+                dynamicBtn.className = "w-full bg-amber-600 hover:bg-amber-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white";
+                instructionText.innerText = "আপনার ব্যালেন্স জমা আছে। উত্তোলন করতে চাইলে নিচের বক্সে এমাউন্ট দিন।";
+            } else {
+                statusElem.innerText = `পাওনা / মাইনাস ব্যালেন্স রয়েছে`;
                 statusElem.className = "text-xs text-rose-400 mt-2 font-medium";
                 dynamicBtn.innerText = "অগ্রিম নিন";
-                dynamicBtn.className = "bg-rose-600 hover:bg-rose-500 font-medium py-3 rounded-xl transition shadow-md";
-            } else {
-                statusElem.innerText = "হিসাব শূন্য (৳ ০)";
-                statusElem.className = "text-xs text-slate-400 mt-2 font-medium";
-                dynamicBtn.innerText = "উত্তোলন / অগ্রিম";
-                dynamicBtn.className = "bg-slate-700 hover:bg-slate-600 font-medium py-3 rounded-xl transition shadow-md";
+                dynamicBtn.className = "w-full bg-rose-600 hover:bg-rose-500 font-medium py-3 rounded-xl transition shadow-md text-sm text-white";
+                instructionText.innerText = "আপনার ব্যালেন্স মাইনাসে আছে। আরও অগ্রিম নিতে চাইলে নিচের বক্সে এমাউন্ট দিন।";
             }
         }
 
-        // Add input amounts to temporary array
+        // TAB SWITCHING
+        function switchTab(tab) {
+            const tabCalc = document.getElementById('tabCalc');
+            const tabAction = document.getElementById('tabAction');
+            const secCalc = document.getElementById('sectionCalc');
+            const secAction = document.getElementById('sectionAction');
+
+            if(tab === 'calc') {
+                tabCalc.className = "py-2 text-xs font-medium rounded-lg bg-emerald-600 text-white transition";
+                tabAction.className = "py-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition";
+                secCalc.classList.remove('hidden');
+                secAction.classList.add('hidden');
+            } else {
+                tabAction.className = "py-2 text-xs font-medium rounded-lg bg-amber-600 text-white transition";
+                tabCalc.className = "py-2 text-xs font-medium rounded-lg text-slate-400 hover:text-white transition";
+                secAction.classList.remove('hidden');
+                secCalc.classList.add('hidden');
+            }
+        }
+
+        // ADD AMOUNTS LIST
         function addToList() {
             const val = parseFloat(document.getElementById('inputAmount').value);
             if (!isNaN(val) && val > 0) {
@@ -179,11 +203,11 @@
         function renderBadges() {
             const container = document.getElementById('badgeContainer');
             if (amountsArray.length === 0) {
-                container.innerHTML = `<span class="text-xs text-slate-500">যোগ করা এমাউন্টগুলো এখানে দেখাবে...</span>`;
+                container.innerHTML = `<span class="text-xs text-slate-600">যোগ করা এমাউন্টগুলো এখানে দেখাবে...</span>`;
                 return;
             }
             container.innerHTML = amountsArray.map((amt, idx) => `
-                <span class="bg-slate-800 border border-slate-700 px-3 py-1 rounded-lg text-sm flex items-center gap-2">
+                <span class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg text-xs flex items-center gap-1.5">
                     ৳ ${amt}
                     <button onclick="removeAmount(${idx})" class="text-rose-400 hover:text-rose-300 font-bold">&times;</button>
                 </span>
@@ -200,31 +224,52 @@
 
         document.getElementById('inputPercentage').addEventListener('input', calculatePreview);
 
-        // Submit to Google Sheets
-        function submitTransaction(type) {
+        // SUBMIT DEPOSIT
+        function submitDeposit() {
             if (amountsArray.length === 0) {
                 alert("দয়া করে অন্তত একটি এমাউন্ট যোগ করুন!");
                 return;
             }
 
-            const { sum, net } = calculatePreview();
+            const { net } = calculatePreview();
             const percentage = parseFloat(document.getElementById('inputPercentage').value) || 0;
-            const description = document.getElementById('inputDesc').value;
 
             const payload = {
-                type: type,
+                type: "deposit",
                 prevBalance: currentBalance,
-                inputAmount: sum,
+                inputAmount: net,
                 percentage: percentage,
                 netAmount: net,
-                description: description
+                description: percentage > 0 ? `জমা (${percentage}% পার্সেন্টেজ বাদ দিয়ে)` : "জমা"
             };
 
-            // Loading state
-            const btnText = event.target.innerText;
-            event.target.innerText = "সংরক্ষণ হচ্ছে...";
-            event.target.disabled = true;
+            sendToServer(payload);
+        }
 
+        // SUBMIT WITHDRAW OR ADVANCE
+        function submitAction() {
+            const amt = parseFloat(document.getElementById('actionInputAmount').value);
+            if (isNaN(amt) || amt <= 0) {
+                alert("দয়া করে সঠিক এমাউন্ট দিন!");
+                return;
+            }
+
+            const isAdvance = currentBalance < 0;
+            const typeLabel = isAdvance ? "অগ্রিম নেওয়া হয়েছে" : "উত্তোলন";
+
+            const payload = {
+                type: "withdraw",
+                prevBalance: currentBalance,
+                inputAmount: amt,
+                percentage: 0,
+                netAmount: amt,
+                description: typeLabel
+            };
+
+            sendToServer(payload);
+        }
+
+        function sendToServer(payload) {
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify(payload)
@@ -234,7 +279,7 @@
                 if(res.status === "success") {
                     amountsArray = [];
                     document.getElementById('inputPercentage').value = "0";
-                    document.getElementById('inputDesc').value = "";
+                    document.getElementById('actionInputAmount').value = "";
                     renderBadges();
                     calculatePreview();
                     fetchData();
@@ -242,51 +287,44 @@
                 } else {
                     alert("সমস্যা হয়েছে: " + res.message);
                 }
-                event.target.innerText = btnText;
-                event.target.disabled = false;
             })
             .catch(err => {
                 alert("সার্ভার কানেকশনে সমস্যা!");
-                event.target.innerText = btnText;
-                event.target.disabled = false;
             });
         }
 
-        // Render History Ledger
+        // RENDER CLEAN HISTORY
         function renderTransactions(txs) {
             const listElem = document.getElementById('transactionList');
             if (!txs || txs.length === 0) {
-                listElem.innerHTML = `<p class="text-center text-slate-500 text-sm py-4">কোনো লেনদেন পাওয়া যায়নি।</p>`;
+                listElem.innerHTML = `<p class="text-center text-slate-600 text-xs py-4">কোনো লেনদেন পাওয়া যায়নি।</p>`;
                 return;
             }
 
             listElem.innerHTML = txs.map(tx => {
                 const isDeposit = tx.type === 'deposit';
                 const badgeColor = isDeposit ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
-                const typeText = isDeposit ? 'জমা' : 'উত্তোলন/অগ্রিম';
+                const sign = isDeposit ? '+' : '-';
+                const amountClass = isDeposit ? 'text-emerald-400' : 'text-rose-400';
 
                 return `
-                    <div class="bg-slate-900/60 border border-slate-700/60 rounded-xl p-3.5 space-y-2 text-sm">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs px-2.5 py-0.5 rounded-full border ${badgeColor}">${typeText}</span>
-                            <span class="text-xs text-slate-400">${tx.timestamp}</span>
+                    <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 flex justify-between items-center text-xs">
+                        <div class="space-y-1">
+                            <span class="px-2 py-0.5 rounded-full border ${badgeColor}">${tx.description || (isDeposit ? 'জমা' : 'উত্তোলন')}</span>
+                            <p class="text-[10px] text-slate-500 pt-0.5">${tx.timestamp}</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 bg-slate-800/50 p-2 rounded-lg">
-                            <div>পূর্বের ব্যালেন্স: <span class="font-semibold">৳ ${tx.prevBalance}</span></div>
-                            <div>ইনপুট যোগফল: <span class="font-semibold">৳ ${tx.inputAmount}</span></div>
-                            <div>পার্সেন্টেজ: <span class="font-semibold">${tx.percentage}%</span></div>
-                            <div>নেট এমাউন্ট: <span class="font-semibold text-emerald-400">৳ ${tx.netAmount}</span></div>
+                        <div class="text-right">
+                            <span class="font-bold text-sm ${amountClass}">${sign} ৳ ${tx.netAmount}</span>
                         </div>
-                        ${tx.description ? `<p class="text-xs text-slate-400 italic">নোট: ${tx.description}</p>` : ''}
                     </div>
                 `;
             }).join('');
         }
 
-        // Admin Security Management
+        // ADMIN MODAL
         function toggleAdminModal() {
             if (isAdmin) {
-                if(confirm("আপনি কি অ্যাডমিন মোড থেকে বের হতে চান?")) {
+                if(confirm("অ্যাডমিন মোড থেকে বের হতে চান?")) {
                     logoutAdmin();
                 }
             } else {
@@ -302,7 +340,6 @@
 
         function verifyPin() {
             const enteredPin = document.getElementById('pinInput').value;
-            // ডিফল্ট পিন '1234' রাখা হয়েছে, প্রয়োজনে পরিবর্তন করতে পারেন
             if (enteredPin === "1234") {
                 isAdmin = true;
                 localStorage.setItem('isAdminLoggedIn', 'true');
@@ -325,12 +362,12 @@
             const btn = document.getElementById('adminToggleBtn');
             if (isAdmin) {
                 panel.classList.remove('hidden');
-                btn.innerText = "🔓 অ্যাডমিন মোড (লগআউট)";
+                btn.innerText = "🔓 লগআউট";
                 btn.className = "bg-emerald-600 hover:bg-emerald-500 text-xs px-3 py-1.5 rounded-lg text-white font-medium transition";
             } else {
                 panel.classList.add('hidden');
                 btn.innerText = "🔒 অ্যাডমিন লগইন";
-                btn.className = "bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1.5 rounded-lg border border-slate-600 transition";
+                btn.className = "bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition";
             }
         }
     </script>
